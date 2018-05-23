@@ -13,13 +13,14 @@ rcParams.update({'figure.autolayout': True})
 class LogAnalitic:
     eventdata = {}
 
-    def __init__(self):
+    def __init__(self,fpath):
         self.eventdata['datetime'] = []
         self.eventdata['station'] = []
         self.eventdata['syscode'] = []
         self.eventdata['type'] = []
         self.eventdata['event'] = []
         self.eventdata['source'] = []
+        self.fpath = fpath
         pass
 
     def load_file(self, filename):
@@ -77,9 +78,8 @@ class LogAnalitic:
 
         vc.plot(stacked = True, legend = True, linestyle = "dotted",kind='bar', rot=90)
         fig = plt.gcf()
-        # fig.set_figwidth(500)
-        # fig.set_figheight(600)
-        fig.savefig('output.png')
+        fig.set_figheight(7)
+        fig.savefig(self.fpath + 'event.png')
 
         return dvc
 
@@ -87,15 +87,23 @@ class LogAnalitic:
         df = pd.DataFrame(self.eventdata)
         df['syscode'] = df['syscode'].astype('int64')
         df['station'] = df['station'].astype('int64')
-        vc = df['station'].value_counts()
+        vc = df['station'].value_counts(ascending = True)
         dvc = dict(vc)
+        plt.gcf().clear()
+
+        vc.plot(stacked = True, legend = True, linestyle = "dotted", kind='barh', fontsize = 8)
+
+        fig = plt.gcf()
+        fig.set_figheight(len(dvc)*0.1)
+        fig.savefig(self.fpath + 'station.png')
+
         return dvc
 
     def save_as_xlsx(self,xlsname):
         df = pd.DataFrame(self.eventdata)
         df['syscode'] = df['syscode'].astype('int64')
         df['station'] = df['station'].astype('int64')
-        writer = pd.ExcelWriter(xlsname, engine='xlsxwriter')
+        writer = pd.ExcelWriter(self.fpath + xlsname, engine='xlsxwriter')
         df.to_excel(writer, sheet_name='data', index = False, columns=['datetime','syscode','type','station','event','source'])
         workbook = writer.book
         worksheet = writer.sheets['data']

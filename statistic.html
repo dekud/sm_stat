@@ -3,27 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Отчет</title>
+    <style>
+        td {
+               vertical-align: top;
+        }
+    </style>
 </head>
 <body>
 <p>{{ filename }}</p>
-<table border="2">
-    <tr><th>События</th><th>Количество</th></tr>
-    {% for ev in events %}
-        {% block events %}
-        <tr>
-            <td>{{ ev.name }}</td>
-            <td>{{ ev.count }}</td>
-        </tr>
-        {% end %}
-    {% end %}
-</table>
-
-
 <form action="/getfile" method="get" enctype="multipart/form-data">
     Загрузить log-файл:
     <input name="filename" type="hidden" value="{{ filename }}">
     <input type="submit" value="Download" name="submit">
 </form>
+<br>
 
+<table >
+    <tr>
+        <td>
+            <table border="2">
+                <tr><th>События</th><th>Количество</th></tr>
+                {% for ev in events %}
+                    {% block events %}
+                    <tr>
+                        <td>{{ ev.name }}</td>
+                        <td>{{ ev.count }}</td>
+                    </tr>
+                    {% end %}
+                {% end %}
+            </table>
+        </td>
+        <td>
+            <img src="/uploads/event.png">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table border="2">
+                <tr><th>Станции</th><th>Количество</th></tr>
+                {% for st in stations %}
+                {% block stations%}
+                <tr>
+                    <td>{{ st.name }}</td>
+                    <td>{{ st.count }}</td>
+                </tr>
+                {% end %}
+                {% end %}
+            </table>
+        </td>
+        <td>
+            <img src="/uploads/station.png">
+        </td>
+    </tr>
+</table>
 </body>
 </html>

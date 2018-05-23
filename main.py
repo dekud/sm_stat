@@ -10,6 +10,10 @@ class Event:
     name = ""
     count = 0
 
+class Station:
+    name = ""
+    count = 0
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         pass
@@ -24,7 +28,7 @@ class DownloadHandler(tornado.web.RequestHandler):
         # file_name = "log.xlsx"
         # print(current_xls_file)
         _file_dir = os.path.abspath("") + "/"
-        _file_path = "%s/%s" % (_file_dir, file_name)
+        _file_path = "%s/%s" % (_file_dir, "/uploads/"+file_name)
         if not file_name or not os.path.exists(_file_path):
             raise tornado.web.HTTPError(404)
         self.set_header('Content-Type', 'application/force-download')
@@ -50,12 +54,12 @@ class UploadHandler(tornado.web.RequestHandler):
         print("fileinfo is", fileinfo)
         fname = fileinfo['filename']
         extn = os.path.splitext(fname)[1]
-        cname = fname +".log"
+        cname = "./uploads/" +fname +".log"
         fh = open(cname, 'wb')
         fh.write(fileinfo['body'])
 
 
-        loga = la.LogAnalitic()
+        loga = la.LogAnalitic("./uploads/")
         loga.load_file(cname)
         current_xls_file = fname + ".xlsx"
         loga.save_as_xlsx(current_xls_file)
@@ -70,7 +74,15 @@ class UploadHandler(tornado.web.RequestHandler):
             ev.count= events_dict[v]
             events.append(ev)
 
-        self.render('statistic.html', events=events, filename = current_xls_file)
+        stations_dict = loga.get_stations_count()
+        stations = []
+
+        for v in sorted(stations_dict, key = stations_dict.__getitem__, reverse= True):
+            st = Event()
+            st.name = v
+            st.count= stations_dict[v]
+            stations.append(st)
+        self.render('statistic.html', events=events, filename = current_xls_file, stations = stations)
 
         return
 
@@ -79,9 +91,10 @@ def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/getfile", DownloadHandler),
-        (r"/upload", UploadHandler)
+        (r"/upload", UploadHandler),
+        (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'static/'}),
+        (r'/uploads/(.*)', tornado.web.StaticFileHandler, {'path': 'uploads/'})
     ])
-
 
 
 if __name__ == "__main__":

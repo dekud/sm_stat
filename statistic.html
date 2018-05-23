@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчет</title>
+</head>
+<body>
+<p>{{ filename }}</p>
+<table border="2">
+    <tr><th>События</th><th>Количество</th></tr>
+    {% for ev in events %}
+        {% block events %}
+        <tr>
+            <td>{{ ev.name }}</td>
+            <td>{{ ev.count }}</td>
+        </tr>
+        {% end %}
+    {% end %}
+</table>
+
+
+<form action="/getfile" method="get" enctype="multipart/form-data">
+    Загрузить log-файл:
+    <input name="filename" type="hidden" value="{{ filename }}">
+    <input type="submit" value="Download" name="submit">
+</form>
+
+</body>
+</html>

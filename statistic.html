@@ -7,39 +7,79 @@
         td {
                vertical-align: top;
         }
+
+        table {
+            border-collapse: collapse;
+        }
+
     </style>
 </head>
 <body>
 <p>{{ filename }}</p>
 <form action="/getfile" method="get" enctype="multipart/form-data">
-    Загрузить log-файл:
     <input name="filename" type="hidden" value="{{ filename }}">
     <input type="submit" value="Download" name="submit">
 </form>
 <br>
 
 <table >
+    {% try %}
+    {% if events %}
     <tr>
         <td>
-            <table border="2">
+            <table border="1">
                 <tr><th>События</th><th>Количество</th></tr>
                 {% for ev in events %}
                     {% block events %}
                     <tr>
-                        <td>{{ ev.name }}</td>
-                        <td>{{ ev.count }}</td>
+                        {% if ev.name == "total" %}
+                            <td><b>Всего</b></td>
+                            <td><b>{{ ev.count }}</b></td>
+                        {% else %}
+                            <td>{{ ev.name }}</td>
+                            <td>{{ ev.count }}</td>
+                        {% end %}
                     </tr>
                     {% end %}
                 {% end %}
             </table>
         </td>
         <td>
-            <img src="/uploads/event.png">
+            <img src="/uploads/event.png" border="1">
         </td>
     </tr>
+    {% end %}
+    {% except %}
+    {% end %}
+    {% try %}
+    {% if scevents %}
     <tr>
         <td>
-            <table border="2">
+            <table border="1">
+                <tr><th>Система</th><th>События</th><th>Количество</th></tr>
+                {% for ev in scevents %}
+                {% block scevents %}
+                <tr>
+                    <td>{{ ev.sys_code}}</td>
+                    <td>{{ ev.name }}</td>
+                    <td>{{ ev.count }}</td>
+                </tr>
+                {% end %}
+                {% end %}
+            </table>
+        </td>
+        <td>
+            <img src="/uploads/syscode_event.png" border="1">
+        </td>
+    </tr>
+    {% end %}
+    {% except %}
+    {% end %}
+    {% try %}
+    {% if stations %}
+    <tr>
+        <td>
+            <table border="1">
                 <tr><th>Станции</th><th>Количество</th></tr>
                 {% for st in stations %}
                 {% block stations%}
@@ -52,9 +92,12 @@
             </table>
         </td>
         <td>
-            <img src="/uploads/station.png">
+            <img src="/uploads/station.png" border="1">
         </td>
     </tr>
+    {% end %}
+    {% except %}
+    {% end %}
 </table>
 </body>
 </html>

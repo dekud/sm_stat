@@ -90,14 +90,15 @@ class LogAnalitic:
         df = pd.DataFrame(self.eventdata)
         df['syscode'] = df['syscode'].astype('int64')
         df['station'] = df['station'].astype('int64')
-        vc = df['event'].value_counts()
+        vc = df['event'].value_counts(ascending = True)
         dvc = dict(vc)
         dvc['total'] = len(self.eventdata['event'])
         plt.gcf().clear()
 
-        vc.plot(stacked = True, legend = True, linestyle = "dotted",kind='bar', rot=90)
+        vc.plot(stacked = True, legend = True, linestyle = "dotted",kind='barh', rot=00, color = 'b')
         fig = plt.gcf()
         fig.set_figheight(7)
+        fig.set_figwidth(9)
         fig.savefig(self.fpath + 'event.png')
 
         return dvc
@@ -107,12 +108,13 @@ class LogAnalitic:
         df = pd.DataFrame(self.eventdata)
         df['syscode'] = df['syscode'].astype('int64')
         df['station'] = df['station'].astype('int64')
-        vc = df.pivot_table(index = ['syscode','event'],values=['station'],aggfunc= np.count_nonzero)
+        # vc = df.pivot_table(index = ['syscode','event'],values=['station'],aggfunc= np.count_nonzero)
+        vc = df.pivot_table(index = ['syscode','event'],values=['station'],aggfunc = {'station':'count'})
 
         dvc = vc['station'].to_dict()
         plt.gcf().clear()
 
-        vc.plot(stacked = True, legend = True, linestyle = "dotted",kind='bar', rot=90)
+        vc.plot(stacked = True, legend = True, linestyle = "dotted",kind='barh', rot=00, color = 'b')
         fig = plt.gcf()
         fig.set_figheight(7)
         fig.savefig(self.fpath + 'syscode_event.png')

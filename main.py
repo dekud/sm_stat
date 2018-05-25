@@ -3,7 +3,7 @@
 import os, uuid
 import tornado.ioloop
 import tornado.web
-import logАnalitic as la
+import logAnalitic as la
 
 class Event:
     name = ""

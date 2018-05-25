@@ -5,24 +5,27 @@ import tornado.ioloop
 import tornado.web
 import logAnalitic as la
 
+
 class Event:
     name = ""
     count = 0
+
 
 class SyscodeEvent:
     sys_code = 0
     name = ""
     count = 0
 
+
 class Station:
     name = ""
     count = 0
+
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         pass
         self.render('index.html')
-
 
 
 class DownloadHandler(tornado.web.RequestHandler):
@@ -49,6 +52,7 @@ class DownloadHandler(tornado.web.RequestHandler):
 
         raise tornado.web.HTTPError(500)
 
+
 class UploadHandler(tornado.web.RequestHandler):
     def post(self):
 
@@ -58,7 +62,6 @@ class UploadHandler(tornado.web.RequestHandler):
             print(fi['filename'])
             f = fi['body'].decode('cp1251')
             loga.parse_log_file(f.splitlines())
-
 
         fileinfos = self.request.files['myFile']
         fname = fileinfos[0]['filename']
@@ -93,7 +96,7 @@ class UploadHandler(tornado.web.RequestHandler):
                 if v != 'total':
                     ev = Event()
                     ev.name = v
-                    ev.count= events_dict[v]
+                    ev.count = events_dict[v]
                     events.append(ev)
 
             ev = Event()
@@ -117,21 +120,23 @@ class UploadHandler(tornado.web.RequestHandler):
 
             scevents = []
 
-            for v in sorted(scevents_dict, key = scevents_dict.__getitem__, reverse= True):
+            for v in sorted(scevents_dict, key=scevents_dict.__getitem__, reverse= True):
                 ev = SyscodeEvent()
                 ev.name = v[1]
                 ev.sys_code = v[0]
-                ev.count= scevents_dict[v]
+                ev.count = scevents_dict[v]
                 scevents.append(ev)
 
-            self.render('statistic.html', filename = current_xls_file, scevents = scevents)
+            self.render('statistic.html', filename=current_xls_file, scevents=scevents)
 
         return
+
 
 class NoCacheStaticFileHandler(tornado.web.StaticFileHandler):
     def set_extra_headers(self, path):
         # self.set_header("Cache-control", "no-cache")
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+
 
 def make_app():
     return tornado.web.Application([

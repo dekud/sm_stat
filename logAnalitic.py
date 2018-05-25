@@ -10,6 +10,7 @@ import numpy as np
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
+
 class LogAnalitic:
     eventdata = {}
 

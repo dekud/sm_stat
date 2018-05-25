@@ -4,7 +4,6 @@ import os, uuid
 import tornado.ioloop
 import tornado.web
 import logАnalitic as la
-current_xls_file  = ""
 
 class Event:
     name = ""
@@ -52,26 +51,35 @@ class DownloadHandler(tornado.web.RequestHandler):
 
 class UploadHandler(tornado.web.RequestHandler):
     def post(self):
-        fileinfo = self.request.files['myFile'][0]
-        fname = fileinfo['filename']
+
+        loga = la.LogAnalitic("./uploads/")
+
+        for fi in self.request.files['myFile']:
+            print(fi['filename'])
+            f = fi['body'].decode('cp1251')
+            loga.parse_log_file(f.splitlines())
+
+
+        fileinfos = self.request.files['myFile']
+        fname = fileinfos[0]['filename']
+
+        if len(fileinfos) > 1:
+            fn_start = fileinfos[0]['filename']
+            fn_end = fileinfos[-1]['filename']
+            fname = fn_start[:-4]+"_"+fn_end[:-4]
 
         # ------------ without saving file ----------------#
         # extn = os.path.splitext(fname)[1]
         # cname = "./uploads/" +fname +".log"
         # fh = open(cname, 'wb')
         # fh.write(fileinfo['body'])
-
-
-        loga = la.LogAnalitic("./uploads/")
-
-        # ------------ without saving file ----------------#
         # loga.load_file(cname)
 
-        f = fileinfo['body'].decode('cp1251')
+        # f = fileinfo['body'].decode('cp1251')
+        #
+        # loga.parse_log_file(f.splitlines())
 
-        loga.parse_log_file(f.splitlines())
         current_xls_file = fname + ".xlsx"
-
         loga.save_as_xlsx(current_xls_file)
 
         sc_dict = loga.get_syscode_count()
@@ -93,16 +101,16 @@ class UploadHandler(tornado.web.RequestHandler):
             ev.count = events_dict['total']
             events.append(ev)
 
-            stations_dict = loga.get_stations_count()
-            stations = []
+            # stations_dict = loga.get_stations_count()
+            # stations = []
+            #
+            # for v in sorted(stations_dict, key = stations_dict.__getitem__, reverse= True):
+            #     st = Station()
+            #     st.name = v
+            #     st.count= stations_dict[v]
+            #     stations.append(st)
 
-            for v in sorted(stations_dict, key = stations_dict.__getitem__, reverse= True):
-                st = Station()
-                st.name = v
-                st.count= stations_dict[v]
-                stations.append(st)
-
-            self.render('statistic.html', events=events, filename = current_xls_file, stations = stations )
+            self.render('statistic.html', events=events, filename = current_xls_file)
         else:
 
             scevents_dict = loga.get_events_syscode_count()
@@ -120,14 +128,18 @@ class UploadHandler(tornado.web.RequestHandler):
 
         return
 
+class NoCacheStaticFileHandler(tornado.web.StaticFileHandler):
+    def set_extra_headers(self, path):
+        # self.set_header("Cache-control", "no-cache")
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/getfile", DownloadHandler),
         (r"/upload", UploadHandler),
-        (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'static/'}),
-        (r'/uploads/(.*)', tornado.web.StaticFileHandler, {'path': 'uploads/'})
+        (r'/static/(.*)', NoCacheStaticFileHandler, {'path': 'static/'}),
+        (r'/uploads/(.*)', NoCacheStaticFileHandler, {'path': 'uploads/'})
     ])
 
 

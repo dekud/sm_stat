@@ -25,6 +25,10 @@ class LogAnalitic:
 
     def load_file(self, filename):
         f = open(filename,'r', encoding='cp1251')
+        self.parse_log_file(f)
+        f.close()
+
+    def parse_log_file(self, f):
         for line in f:
             ar = self.splitline(line)
 
@@ -73,8 +77,6 @@ class LogAnalitic:
                 self.eventdata['source'].append(line)
 
                 # print(ar)
-
-        f.close()
 
     def get_syscode_count(self):
         df = pd.DataFrame(self.eventdata)

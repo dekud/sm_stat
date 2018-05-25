@@ -28,10 +28,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 class DownloadHandler(tornado.web.RequestHandler):
     def get(self):
-        print(self.request)
         file_name = self.get_argument('filename')
-        # file_name = "log.xlsx"
-        # print(current_xls_file)
         _file_dir = os.path.abspath("") + "/"
         _file_path = "%s/%s" % (_file_dir, "/uploads/"+file_name)
         if not file_name or not os.path.exists(_file_path):
@@ -56,24 +53,32 @@ class DownloadHandler(tornado.web.RequestHandler):
 class UploadHandler(tornado.web.RequestHandler):
     def post(self):
         fileinfo = self.request.files['myFile'][0]
-        print("fileinfo is", fileinfo)
         fname = fileinfo['filename']
-        extn = os.path.splitext(fname)[1]
-        cname = "./uploads/" +fname +".log"
-        fh = open(cname, 'wb')
-        fh.write(fileinfo['body'])
+
+        # ------------ without saving file ----------------#
+        # extn = os.path.splitext(fname)[1]
+        # cname = "./uploads/" +fname +".log"
+        # fh = open(cname, 'wb')
+        # fh.write(fileinfo['body'])
 
 
         loga = la.LogAnalitic("./uploads/")
-        loga.load_file(cname)
+
+        # ------------ without saving file ----------------#
+        # loga.load_file(cname)
+
+        f = fileinfo['body'].decode('cp1251')
+
+        loga.parse_log_file(f.splitlines())
         current_xls_file = fname + ".xlsx"
+
         loga.save_as_xlsx(current_xls_file)
 
         sc_dict = loga.get_syscode_count()
         sc_count = len(sc_dict)
 
         if(sc_count == 1):
-            events_dict =loga.get_events_count()
+            events_dict = loga.get_events_count()
             events = []
 
             for v in sorted(events_dict, key = events_dict.__getitem__, reverse= True):

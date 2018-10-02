@@ -86,6 +86,7 @@ class UploadHandler(tornado.web.RequestHandler):
         loga.save_as_xlsx(current_xls_file)
 
         sc_dict = loga.get_syscode_count()
+
         sc_count = len(sc_dict)
 
         if(sc_count == 1):

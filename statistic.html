@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Отчет</title>
+    <title>Стрелец-Мониторинг: Отчёт</title>
+    <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/lib/bootstrap/js/bootstrap.min.js"></script>
     <style>
         td {
                vertical-align: top;
@@ -13,91 +19,165 @@
         }
 
     </style>
+<!--    <style>-->
+<!--        @media (min-width: 1600px) {-->
+<!--  .container {-->
+<!--    width: 1500px;-->
+<!--  }-->
+<!--}-->
+<!--    </style>-->
 </head>
 <body>
-<p>{{ filename }}</p>
-<form action="/getfile" method="get" enctype="multipart/form-data">
-    <input name="filename" type="hidden" value="{{ filename }}">
-    <input type="submit" value="Download" name="submit">
-</form>
-<br>
 
-<table >
-    {% try %}
-    {% if events %}
-    <tr>
-        <td>
-            <table border="1">
-                <tr><th>События</th><th>Количество</th></tr>
-                {% for ev in events %}
-                    {% block events %}
-                    <tr>
-                        {% if ev.name == "total" %}
-                            <td><b>Всего</b></td>
-                            <td><b>{{ ev.count }}</b></td>
-                        {% else %}
-                            <td>{{ ev.name }}</td>
-                            <td>{{ ev.count }}</td>
-                        {% end %}
-                    </tr>
-                    {% end %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-primary" id = "login_panel">
+                    <div class="panel-heading"><h3 class="panel-title"><span class="glyphicon glyphicon-education"></span> Стрелец-Мониторинг: Отчёт</h3></div>
+                    <div class="panel-body">
+                        <p>{{ filename }}</p>
+                        <form action="/getfile" method="get" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <input name="filename" type="hidden" value="{{ filename }}">
+                                <input type="submit" value="Download" name="submit">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+
+                {% try %}
+                {% if events %}
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h3 class="panel-title">Распределение числа событий</h3></div>
+                    <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <table border="1">
+                                <tr><th>События</th><th>Количество</th></tr>
+                                {% for ev in events %}
+                                    {% block events %}
+                                    <tr>
+                                        {% if ev.name == "total" %}
+                                            <td><b>Всего</b></td>
+                                            <td><b>{{ ev.count }}</b></td>
+                                        {% else %}
+                                            <td>{{ ev.name }}</td>
+                                            <td>{{ ev.count }}</td>
+                                        {% end %}
+                                    </tr>
+                                    {% end %}
+                                {% end %}
+                            </table>
+                        </div>
+                        <div class="col-md-8">
+                           <img src="/uploads/event.png" class="img-responsive" >
+                       </div>
+                    </div>
+                </div></div>
                 {% end %}
-            </table>
-        </td>
-        <td>
-            <img src="/uploads/event.png" border="1">
-        </td>
-    </tr>
-    {% end %}
-    {% except %}
-    {% end %}
-    {% try %}
-    {% if scevents %}
-    <tr>
-        <td>
-            <table border="1">
-                <tr><th>Система</th><th>События</th><th>Количество</th></tr>
-                {% for ev in scevents %}
-                {% block scevents %}
-                <tr>
-                    <td>{{ ev.sys_code}}</td>
-                    <td>{{ ev.name }}</td>
-                    <td>{{ ev.count }}</td>
-                </tr>
+                {% except %}
                 {% end %}
+
+
+
+                {% try %}
+                {% if scevents %}
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h3 class="panel-title"><span class="glyphicon glyphicon-education"></span> Распределение числа событий</h3></div>
+                    <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <table border="1">
+                                <tr><th>Система</th><th>События</th><th>Количество</th></tr>
+                                {% for ev in scevents %}
+                                {% block scevents %}
+                                <tr>
+                                    <td>{{ ev.sys_code}}</td>
+                                    <td>{{ ev.name }}</td>
+                                    <td>{{ ev.count }}</td>
+                                </tr>
+                                {% end %}
+                                {% end %}
+                            </table>
+                        </div>
+                        <div class="col-md-8">
+                            <img src="/uploads/syscode_event.png" border="1">
+                        </div>
+                    </div>
+                </div></div>
                 {% end %}
-            </table>
-        </td>
-        <td>
-            <img src="/uploads/syscode_event.png" border="1">
-        </td>
-    </tr>
-    {% end %}
-    {% except %}
-    {% end %}
-    {% try %}
-    {% if stations %}
-    <tr>
-        <td>
-            <table border="1">
-                <tr><th>Станции</th><th>Количество</th></tr>
-                {% for st in stations %}
-                {% block stations%}
-                <tr>
-                    <td>{{ st.name }}</td>
-                    <td>{{ st.count }}</td>
-                </tr>
+                {% except %}
                 {% end %}
+
+                {% try %}
+                {% if stations %}
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h3 class="panel-title">Станции с наибольшим числом событий</h3></div>
+                    <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <table border="1" width="300px">
+                                <tr><th>Номер станции &nbsp;&nbsp; </th><th>Количество событий &nbsp;&nbsp; </th></tr>
+                                {% for st in stations %}
+                                {% block stations%}
+                                <tr>
+                                    <td>{{ st.name }}</td>
+                                    <td>{{ st.count }}</td>
+                                </tr>
+                                {% end %}
+                                {% end %}
+                            </table>
+                        </div>
+                        <div class="col-md-8">
+                            <img src="/uploads/station.png" border="1">
+                        </div>
+                    </div>
+                </div></div>
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h3 class="panel-title">События по станциям</h3></div>
+                    <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                                {% for st in stations %}
+                                {% block stations_event%}
+                                <h4>Станция №{{ st.name }}</h4>
+                                <table border="1" width="300px">
+                                    <tr><th>События</th><th>Количество</th></tr>
+                                    {% for ev in st.events %}
+                                        {% block st.events %}
+                                        <tr>
+                                            {% if ev.name == "total" %}
+                                                <td><b>Всего</b></td>
+                                                <td><b>{{ ev.count }}</b></td>
+                                            {% else %}
+                                                <td>{{ ev.name }}</td>
+                                                <td>{{ ev.count }}</td>
+                                            {% end %}
+                                        </tr>
+                                        {% end %}
+                                    {% end %}
+                                </table>
+                                <br>
+                                {% end %}
+                                {% end %}
+                        </div>
+                    </div>
+                </div></div>
+
                 {% end %}
-            </table>
-        </td>
-        <td>
-            <img src="/uploads/station.png" border="1">
-        </td>
-    </tr>
-    {% end %}
-    {% except %}
-    {% end %}
-</table>
+                {% except %}
+                {% end %}
+
+
+
+
+            </div>
+        </div>
+    </div> <!-- /container -->
 </body>
 </html>

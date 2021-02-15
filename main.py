@@ -17,6 +17,7 @@ class SyscodeEvent:
 class Station:
     name = ""
     count = 0
+    events = []
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -68,25 +69,14 @@ class UploadHandler(tornado.web.RequestHandler):
             fn_end = fileinfos[-1]['filename']
             fname = fn_start[:-4]+"_"+fn_end[:-4]
 
-        # ------------ without saving file ----------------#
-        # extn = os.path.splitext(fname)[1]
-        # cname = "./uploads/" +fname +".log"
-        # fh = open(cname, 'wb')
-        # fh.write(fileinfo['body'])
-        # loga.load_file(cname)
-
-        # f = fileinfo['body'].decode('cp1251')
-        #
-        # loga.parse_log_file(f.splitlines())
-
         current_xls_file = fname + ".xlsx"
         loga.save_as_xlsx(current_xls_file)
 
-        sc_dict = loga.get_syscode_count()
-        sc_count = len(sc_dict)
+        sc_count = loga.get_syscode_count()
 
         if(sc_count == 1):
             events_dict = loga.get_events_count()
+            print(events_dict)
             events = []
 
             for v in sorted(events_dict, key = events_dict.__getitem__, reverse= True):
@@ -101,16 +91,30 @@ class UploadHandler(tornado.web.RequestHandler):
             ev.count = events_dict['total']
             events.append(ev)
 
-            # stations_dict = loga.get_stations_count()
-            # stations = []
-            #
-            # for v in sorted(stations_dict, key = stations_dict.__getitem__, reverse= True):
-            #     st = Station()
-            #     st.name = v
-            #     st.count= stations_dict[v]
-            #     stations.append(st)
+            stations_dict = loga.get_stations_count()
+            stations = []
 
-            self.render('statistic.html', events=events, filename = current_xls_file)
+            for s in sorted(stations_dict, key = stations_dict.__getitem__, reverse= True):
+                st = Station()
+                st.name = s
+                st.count= stations_dict[s]
+                ed = loga.get_os_events_count(s)
+                evs = []
+                for v in sorted(ed, key=ed.__getitem__, reverse=True):
+                    if v != 'total':
+                        e = Event()
+                        e.name = v
+                        e.count = ed[v]
+                        evs.append(e)
+
+                e = Event()
+                e.name = 'total'
+                e.count = ed['total']
+                evs.append(e)
+                st.events = evs
+                stations.append(st)
+
+            self.render('statistic.html', events=events, stations=stations,filename = current_xls_file)
         else:
 
             scevents_dict = loga.get_events_syscode_count()

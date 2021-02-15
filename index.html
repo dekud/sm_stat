@@ -2,17 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Conver log to Xlsx</title>
+    <title>Стрелец-Мониторинг: Статистика</title>
+    <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/lib/bootstrap/js/bootstrap.min.js"></script>
+
 </head>
 <body>
-<p>
-</p>
-<form action="/upload" method="post" enctype="multipart/form-data">
-    Загрузить log-файл:
-    <input name="myFile" type="file" multiple>
-    <br>
-    <br>
-    <input type="submit" value="Преобразовать в xlsx" name="submit">
-</form>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="panel panel-primary" id = "login_panel">
+                    <div class="panel-heading"><h3 class="panel-title"><span class="glyphicon glyphicon-education"></span> Стрелец-Мониторинг: Статистика</h3></div>
+                    <div class="panel-body">
+
+                        <form action="/upload" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="myFile">Загрузить log-файлы <span class="glyphicon glyphicon-folder-open"></span></label>
+                                <input name="myFile" id="myFile" type="file" multiple>
+                                <br>
+                                <input type="submit" value="Преобразовать в xlsx" name="submit">
+                                </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- /container -->
+
 </body>
 </html>

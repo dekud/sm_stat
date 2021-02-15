@@ -8,6 +8,8 @@ import logAnalitic as la
 class Event:
     name = ""
     count = 0
+    id = 0
+    stations = []
 
 class SyscodeEvent:
     sys_code = 0
@@ -55,14 +57,16 @@ class UploadHandler(tornado.web.RequestHandler):
 
         loga = la.LogAnalitic("./uploads/")
 
-        for fi in self.request.files['myFile']:
-            print(fi['filename'])
-            f = fi['body'].decode('cp1251')
-            loga.parse_log_file(f.splitlines())
+        try:
+            for fi in self.request.files['myFile']:
+                print(fi['filename'])
+                f = fi['body'].decode('cp1251')
+                loga.parse_log_file(f.splitlines())
 
-
-        fileinfos = self.request.files['myFile']
-        fname = fileinfos[0]['filename']
+            fileinfos = self.request.files['myFile']
+            fname = fileinfos[0]['filename']
+        except:
+            self.redirect("/")
 
         if len(fileinfos) > 1:
             fn_start = fileinfos[0]['filename']
@@ -74,63 +78,81 @@ class UploadHandler(tornado.web.RequestHandler):
 
         sc_count = loga.get_syscode_count()
 
-        if(sc_count == 1):
-            events_dict = loga.get_events_count()
-            print(events_dict)
-            events = []
-
-            for v in sorted(events_dict, key = events_dict.__getitem__, reverse= True):
-                if v != 'total':
-                    ev = Event()
-                    ev.name = v
-                    ev.count= events_dict[v]
-                    events.append(ev)
-
-            ev = Event()
-            ev.name = 'total'
-            ev.count = events_dict['total']
-            events.append(ev)
-
-            stations_dict = loga.get_stations_count()
-            stations = []
-
-            for s in sorted(stations_dict, key = stations_dict.__getitem__, reverse= True):
-                st = Station()
-                st.name = s
-                st.count= stations_dict[s]
-                ed = loga.get_os_events_count(s)
-                evs = []
-                for v in sorted(ed, key=ed.__getitem__, reverse=True):
-                    if v != 'total':
-                        e = Event()
-                        e.name = v
-                        e.count = ed[v]
-                        evs.append(e)
-
-                e = Event()
-                e.name = 'total'
-                e.count = ed['total']
-                evs.append(e)
-                st.events = evs
-                stations.append(st)
-
+        if sc_count == 1:
+            events = self.event_list(loga)
+            stations = self.station_list(loga)
             self.render('statistic.html', events=events, stations=stations,filename = current_xls_file)
         else:
-
-            scevents_dict = loga.get_events_syscode_count()
-
-            scevents = []
-
-            for v in sorted(scevents_dict, key = scevents_dict.__getitem__, reverse= True):
-                ev = SyscodeEvent()
-                ev.name = v[1]
-                ev.sys_code = v[0]
-                ev.count= scevents_dict[v]
-                scevents.append(ev)
-
+            scevents = self.sc_event_list(loga)
             self.render('statistic.html', filename = current_xls_file, scevents = scevents)
 
         return
+
+    def sc_event_list(self, loga):
+        scevents_dict = loga.get_events_syscode_count()
+        scevents = []
+        for v in sorted(scevents_dict, key=scevents_dict.__getitem__, reverse=True):
+            ev = SyscodeEvent()
+            ev.name = v[1]
+            ev.sys_code = v[0]
+            ev.count = scevents_dict[v]
+            scevents.append(ev)
+        return scevents
+
+    def station_list(self, loga):
+        stations_dict = loga.get_stations_count()
+        stations = []
+        for s in sorted(stations_dict, key=stations_dict.__getitem__, reverse=True):
+            st = Station()
+            st.name = s
+            st.count = stations_dict[s]
+            ed = loga.get_os_events_count(s)
+            evs = []
+            for v in sorted(ed, key=ed.__getitem__, reverse=True):
+                if v != 'total':
+                    e = Event()
+                    e.name = v
+                    e.count = ed[v]
+                    evs.append(e)
+
+            e = Event()
+            e.name = 'total'
+            e.count = ed['total']
+            evs.append(e)
+            st.events = evs
+            stations.append(st)
+        return stations
+
+    def event_list(self, loga):
+        events_dict = loga.get_events_count()
+        print(events_dict)
+        events = []
+        ind = 0
+        for v in sorted(events_dict, key=events_dict.__getitem__, reverse=True):
+            if v != 'total':
+                stdict = loga.get_events_stations_count(v)
+                ev = Event()
+                ev.id = ind + 0xDA
+                ind = ind + 1
+                ev.name = v
+                ev.count = events_dict[v]
+                ev_s = []
+                for s in sorted(stdict, key=stdict.__getitem__, reverse=True):
+                    st = Station()
+                    st.name = s
+                    st.count = stdict[s]
+                    ev_s.append(st)
+
+                ev.stations = ev_s
+                print(ev.stations)
+
+                events.append(ev)
+        ev = Event()
+        ev.name = 'total'
+        ev.count = events_dict['total']
+        events.append(ev)
+        return events
+
 
 class NoCacheStaticFileHandler(tornado.web.StaticFileHandler):
     def set_extra_headers(self, path):

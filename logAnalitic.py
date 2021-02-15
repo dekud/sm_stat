@@ -207,6 +207,26 @@ class LogAnalitic:
 
         return dvc
 
+    def get_events_stations_count(self,ev):
+        df = pd.DataFrame(self.eventdata)
+        df['syscode'] = df['syscode'].astype('int64')
+        df['station'] = df['station'].astype('int64')
+        df = df[df['event'] == ev]
+        vc = df['station'].value_counts(ascending=True)
+
+        dvc = dict(vc)
+
+        dvc10 = dict(sorted(dvc.items(), key=lambda item: item[1], reverse=True))
+        print(dvc10)
+        dvc = dict()
+        ind = 0
+        for item in dvc10.items():
+            dvc[item[0]] = item[1]
+            ind = ind + 1
+            if ind == 20:
+                break
+
+        return dvc
 
     def save_as_xlsx(self, xlsname):
         df = pd.DataFrame(self.eventdata)

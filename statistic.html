@@ -12,6 +12,11 @@
     <style>
         td {
                vertical-align: top;
+               text-align: center;
+        }
+        th {
+               vertical-align: top;
+               text-align: center;
         }
 
         table {
@@ -48,7 +53,6 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-
                 {% try %}
                 {% if events %}
                 <div class="panel panel-primary">
@@ -65,8 +69,15 @@
                                             <td><b>Всего</b></td>
                                             <td><b>{{ ev.count }}</b></td>
                                         {% else %}
-                                            <td>{{ ev.name }}</td>
+                                            <td>
+                                                {{ ev.name }}
+                                            </td>
                                             <td>{{ ev.count }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#mod{{ ev.id }}">
+                                                    <span class="glyphicon glyphicon-search"></span>
+                                                </button>
+                                            </td>
                                         {% end %}
                                     </tr>
                                     {% end %}
@@ -78,6 +89,8 @@
                        </div>
                     </div>
                 </div></div>
+
+
                 {% end %}
                 {% except %}
                 {% end %}
@@ -128,13 +141,13 @@
                                 {% for st in stations %}
                                 {% block stations%}
                                 <tr>
+                                    <td>{{ st.name }}</td>
+                                    <td>{{ st.count }}</td>
                                     <td>
                                     <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal{{ st.name }}">
                                         <span class="glyphicon glyphicon-search"></span>
                                     </button>
-                                    {{ st.name }}
                                     </td>
-                                    <td>{{ st.count }}</td>
                                 </tr>
                                 {% end %}
                                 {% end %}
@@ -188,7 +201,45 @@
                 {% except %}
                 {% end %}
 
-
+                {% try %}
+                    {% if events %}
+                        {% for ev in events %}
+                            {% block events_st %}
+                                <div id="mod{{ ev.id }}" class="modal" role="dialog">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">{{ ev.name }}</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <table border="1"><tr>
+                                                    <td><b>Станция</b>&nbsp;</td>
+                                                    {% for sss in ev.stations %}
+                                                    {% block sssss %}
+                                                    <td>{{ sss.name }}&nbsp;</td>
+                                                    {% end %}
+                                                    {% end %}
+                                                 </tr><tr>
+                                                    <td><b>Количество</b>&nbsp;</td>
+                                                    {% for sss in ev.stations %}
+                                                    {% block ssscount %}
+                                                    <td>{{ sss.count }}&nbsp;</td>
+                                                    {% end %}
+                                                    {% end %}
+                                                 </tr></table>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% end %}
+                        {% end %}
+                    {% end %}
+                    {% except %}
+                {% end %}
 
 
             </div>

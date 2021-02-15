@@ -33,13 +33,13 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-primary" id = "login_panel">
-                    <div class="panel-heading"><h3 class="panel-title"><span class="glyphicon glyphicon-education"></span> Стрелец-Мониторинг: Отчёт</h3></div>
+                    <div class="panel-heading"><h3 class="panel-title"><span class="glyphicon glyphicon-education"></span> Файл в формате Excel</h3></div>
                     <div class="panel-body">
                         <p>{{ filename }}</p>
                         <form action="/getfile" method="get" enctype="multipart/form-data">
                             <div class="form-group">
                                 <input name="filename" type="hidden" value="{{ filename }}">
-                                <input type="submit" value="Download" name="submit">
+                                <input type="submit" value="Скачать" name="submit">
                             </div>
                         </form>
                     </div>
@@ -56,7 +56,7 @@
                     <div class="panel-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <table border="1">
+                            <table border="1" width="350">
                                 <tr><th>События</th><th>Количество</th></tr>
                                 {% for ev in events %}
                                     {% block events %}
@@ -121,11 +121,19 @@
                     <div class="row">
                         <div class="col-md-4">
                             <table border="1" width="300px">
-                                <tr><th>Номер станции &nbsp;&nbsp; </th><th>Количество событий &nbsp;&nbsp; </th></tr>
+                                <tr>
+                                    <th>Номер станции &nbsp;&nbsp; </th>
+                                    <th>Количество событий &nbsp;&nbsp; </th>
+                                </tr>
                                 {% for st in stations %}
                                 {% block stations%}
                                 <tr>
-                                    <td>{{ st.name }}</td>
+                                    <td>
+                                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal{{ st.name }}">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                    {{ st.name }}
+                                    </td>
                                     <td>{{ st.count }}</td>
                                 </tr>
                                 {% end %}
@@ -138,14 +146,17 @@
                     </div>
                 </div></div>
 
-                <div class="panel panel-primary">
-                    <div class="panel-heading"><h3 class="panel-title">События по станциям</h3></div>
-                    <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                                {% for st in stations %}
-                                {% block stations_event%}
-                                <h4>Станция №{{ st.name }}</h4>
+                {% for st in stations %}
+                {% block stations_event%}
+
+                <div id="modal{{ st.name }}" class="modal" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Станция №{{ st.name }}</h4>
+                            </div>
+                            <div class="modal-body">
                                 <table border="1" width="300px">
                                     <tr><th>События</th><th>Количество</th></tr>
                                     {% for ev in st.events %}
@@ -162,12 +173,16 @@
                                         {% end %}
                                     {% end %}
                                 </table>
-                                <br>
-                                {% end %}
-                                {% end %}
-                        </div>
-                    </div>
-                </div></div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                      </div>
+                </div>
+                {% end %}
+                {% end %}
+
 
                 {% end %}
                 {% except %}

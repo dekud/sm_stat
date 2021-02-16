@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Стрелец-Мониторинг: Отчёт</title>
+    <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap-theme.min.css">
+<!--    <link rel="stylesheet" href="/static/css/style.css">-->
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/lib/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        td {
+               vertical-align: top;
+               text-align: center;
+               padding: 1px;
+        }
+        th {
+               vertical-align: top;
+               text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+    </style>
+<!--    <style>-->
+<!--        @media (min-width: 1600px) {-->
+<!--  .container {-->
+<!--    width: 1500px;-->
+<!--  }-->
+<!--}-->
+<!--    </style>-->
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Стрелец-Мониторинг: Статистика</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                    <div>
+                        <h2>Файл в формате Excel</h2>
+                    </div>
+                        <p>{{ filename }}</p>
+                        <form action="/getfile" method="get" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <input name="filename" type="hidden" value="{{ filename }}">
+                                <input type="submit" value="Скачать" name="submit">
+                            </div>
+                        </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {% try %}
+                {% if scevents %}
+                <div>
+                    <h2>Распределение числа событий</h2>
+                </div>
+                <div class="row">
+                        <div class="col-md-4">
+                            <table class="table table-striped">
+                                <tr><th>Система</th><th>События</th><th>Количество</th></tr>
+                                {% for ev in scevents %}
+                                {% block scevents %}
+                                <tr>
+                                    <td>{{ ev.sys_code}}</td>
+                                    <td>{{ ev.name }}</td>
+                                    <td>{{ ev.count }}</td>
+                                </tr>
+                                {% end %}
+                                {% end %}
+                            </table>
+                        </div>
+                        <div class="col-md-8">
+                            <img src="/uploads/syscode_event.png" border="1">
+                        </div>
+                    </div>
+<!--                </div></div>-->
+                {% end %}
+                {% except %}
+                {% end %}
+            </div>
+        </div>
+    </div> <!-- /container -->
+</body>
+</html>

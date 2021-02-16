@@ -275,7 +275,7 @@ class LogAnalitic:
         writer.save()
 
     def splitline(self, strline):
-        regex = r"(\d{2,2}.\d{2,2}.\d{4,4} \d{2,2}:\d{2,2}:\d{2,2})[\s,\t]+([0-9]{1,5})[\s,\t]+.([1-9]{1,3}).[\s,\t]+\d{2,2}.[\s,\t]" \
+        regex = r"(\d{2,2}.\d{2,2}.\d{4,4} \d{2,2}:\d{2,2}:\d{2,2})[\s,\t]+([0-9]{1,5})[\s,\t]+.([0-9]{1,3}).[\s,\t]+\d{2,2}.[\s,\t]" \
                 r"([а-я,А-Я,a-z,A-Z]{2,6}[ ]*[а-я,А-Я,a-z,A-Z]{0,6})" \
                 r"[\s,\t]+(.+)"
         matches = re.finditer(regex, strline)

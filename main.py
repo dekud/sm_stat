@@ -56,7 +56,7 @@ class UploadHandler(tornado.web.RequestHandler):
     def post(self):
 
         loga = la.LogAnalitic("./uploads/")
-
+        print(self.request.remote_ip)
         try:
             for fi in self.request.files['myFile']:
                 print(fi['filename'])
@@ -84,7 +84,7 @@ class UploadHandler(tornado.web.RequestHandler):
             self.render('statistic.html', events=events, stations=stations,filename = current_xls_file)
         else:
             scevents = self.sc_event_list(loga)
-            self.render('statistic.html', filename = current_xls_file, scevents = scevents)
+            self.render('stat_multysc.html', filename = current_xls_file, scevents = scevents)
 
         return
 
@@ -125,7 +125,6 @@ class UploadHandler(tornado.web.RequestHandler):
 
     def event_list(self, loga):
         events_dict = loga.get_events_count()
-        print(events_dict)
         events = []
         ind = 0
         for v in sorted(events_dict, key=events_dict.__getitem__, reverse=True):
@@ -144,8 +143,6 @@ class UploadHandler(tornado.web.RequestHandler):
                     ev_s.append(st)
 
                 ev.stations = ev_s
-                print(ev.stations)
-
                 events.append(ev)
         ev = Event()
         ev.name = 'total'

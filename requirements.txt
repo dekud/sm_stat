@@ -3,14 +3,12 @@ certifi
 chardet
 cycler
 decorator
-idna
 ipython
 ipython-genutils
 jedi
 kiwisolver
 matplotlib
 numpy
-panda
 pandas
 parso
 pexpect
@@ -22,7 +20,6 @@ pyparsing
 python-dateutil
 pytz
 requests
-simplegeneric
 six
 tornado
 traitlets
